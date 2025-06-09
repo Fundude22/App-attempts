@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Groovy Traveller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .question {
+            margin-bottom: 25px;
+        }
+
+        .question h3 {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .option {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .option input[type="radio"] {
+            display: none;
+        }
+
+        .option label {
+            display: block;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .option label:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .groovy-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .groovy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .groovy-button:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .results h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        .destination-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .activity-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+
+        .safety-rating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .change-button {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .change-button:hover {
+            background: #e0a800;
+        }
+
+        .export-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .export-dropdown {
+            margin: 10px;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .share-button {
+            background: #17a2b8;
+            margin: 10px;
+        }
+
+        .share-button:hover {
+            background: #138496;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .sources {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+        }
+
+        .sources h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .sources ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .sources li {
+            padding: 5px 0;
+            border-bottom: 1px solid #ccc;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .options {
+                flex-direction: column;
+            }
+            
+            .option {
+                min-width: unset;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 The Groovy Traveller ✈️</h1>
+            <p>Discover your perfect destination through personalized preferences</p>
+        </div>
+
+        <div class="card" id="questionnaire">
+            <form id="travelForm">
+                <!-- Main Travel Preferences -->
+                <div class="question">
+                    <h3>1. What do you prefer?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q1a" name="q1" value="comfort">
+                            <label for="q1a">Comfort</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q1b" name="q1" value="outside-the-box">
+                            <label for="q1b">Outside-the-box</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>2. What would you rather munch down?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q2a" name="q2" value="rich-food">
+                            <label for="q2a">Delicious rich food</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q2b" name="q2" value="healthy-food">
+                            <label for="q2b">Delicious healthy food</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>3. Temperature?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q3a" name="q3" value="warm">
+                            <label for="q3a">Above 78°F</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q3b" name="q3" value="cool">
+                            <label for="q3b">Below 72°F</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>4. What's more intriguing?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q4a" name="q4" value="people">
+                            <label for="q4a">Interesting people</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q4b" name="q4" value="nature">
+                            <label for="q4b">Interesting nature</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>5. Drawn to...?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q5a" name="q5" value="intellectual">
+                            <label for="q5a">Intellectual stimulation</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q5b" name="q5" value="beauty">
+                            <label for="q5b">Beauty</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>6. Where?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q6a" name="q6" value="indoors">
+                            <label for="q6a">Local culture indoors</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q6b" name="q6" value="outdoors">
+                            <label for="q6b">Local culture outdoors</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>7. How many days for your trip?</h3>
+                    <input type="number" name="days" class="input-field" value="10" min="3" max="30">
+                </div>
+
+                <div class="question">
+                    <h3>8. Maximum flight time round-trip (in hours)?</h3>
+                    <input type="number" name="flight-time" class="input-field" value="16" min="2" max="48">
+                </div>
+
+                <div class="question">
+                    <h3>9. Total budget (excluding airfare)?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q9a" name="q9" value="500-1000">
+                            <label for="q9a">$500–$1000</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q9b" name="q9" value="1000-2000">
+                            <label for="q9b">$1000–$2000</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q9c" name="q9" value="2000-3000">
+                            <label for="q9c">$2000–$3000</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q9d" name="q9" value="3000+">
+                            <label for="q9d">$3000+</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>10. Dogs or cats?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q10a" name="q10" value="dogs">
+                            <label for="q10a">Dogs</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q10b" name="q10" value="cats">
+                            <label for="q10b">Cats</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flavor Questions -->
+                <div class="question">
+                    <h3>11. Entertainment?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q11a" name="q11" value="mysteries">
+                            <label for="q11a">Mysteries</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q11b" name="q11" value="romcoms">
+                            <label for="q11b">Romcoms</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>12. Tattoos?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q12a" name="q12" value="cool">
+                            <label for="q12a">Tattoos are cool</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q12b" name="q12" value="not-cool">
+                            <label for="q12b">Tattoos are stupid</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>13. Cards?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q13a" name="q13" value="bridge">
+                            <label for="q13a">Bridge</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q13b" name="q13" value="poker">
+                            <label for="q13b">Poker</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>14. Structure?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q14a" name="q14" value="spontaneous">
+                            <label for="q14a">Wow, look at that!</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q14b" name="q14" value="planned">
+                            <label for="q14b">Planned....</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>15. Circadian sweet spot?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q15a" name="q15" value="night-owl">
+                            <label for="q15a">Night owl</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q15b" name="q15" value="morning-dove">
+                            <label for="q15b">Morning dove</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>16. Dome?</h3>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" id="q16a" name="q16" value="top-hat">
+                            <label for="q16a">Top hat</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q16b" name="q16" value="hat-hair">
+                            <label for="q16b">Hat hair</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="groovy-button">
+                    🐦 🌳 🐒 ⛰️  Find A Groovy Destination  🌊 🐬 🚲 🏛️
+                </button>
+            </form>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            Generating your perfect groovy destination...
+        </div>
+
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        // Comprehensive destination database with detailed information
+        const destinations = [
+            {
+                name: "Kyoto, Japan",
+                country: "Japan",
+                safetyRating: 3,
+                bestTime: "April-May, October-November",
+                climate: "cool",
+                culture: "indoors",
+                nature: "high",
+                people: "high",
+                intellectual: "high",
+                beauty: "high",
+                budget: ["1000-2000", "2000-3000", "3000+"],
+                flightTime: 14,
+                transportation: ["JR Pass trains", "Local buses", "Bicycle rental", "Walking"],
+                locals: ["Tea ceremony masters", "Artisan craftspeople", "Temple monks", "Local historians"],
+                dontWorry: ["Language barriers - many signs have English", "Getting lost - excellent public transport", "Cash payments - widely accepted", "Dietary restrictions - vegetarian options available"],
+                bringItems: ["Comfortable walking shoes", "Portable wifi device", "Cash (yen)", "Respectful temple attire", "Camera with extra batteries", "Portable umbrella", "Hand towel", "Reusable water bottle", "Phrasebook or translation app", "Portable phone charger"],
+                activities: [
+                    "Visit Fushimi Inari Shrine's thousand torii gates",
+                    "Experience a traditional tea ceremony in Gion",
+                    "Explore Kinkaku-ji (Golden Pavilion) at sunrise",
+                    "Wander through Arashiyama Bamboo Grove",
+                    "Take a cooking class for kaiseki cuisine",
+                    "Visit Kiyomizu-dera temple for city views",
+                    "Stroll through Philosopher's Path",
+                    "Experience a traditional ryokan stay",
+                    "Explore Nijo Castle and its gardens",
+                    "Shop for traditional crafts in Sannenzaka",
+                    "Meditate at Tenryu-ji Temple",
+                    "Visit Kyoto Imperial Palace",
+                    "Experience hanami (cherry blossom viewing)",
+                    "Take a calligraphy workshop",
+                    "Explore the Nishiki Market food scene"
+                ],
+                bonusIdeas: [
+                    "Wake at dawn to have Kinkaku-ji nearly to yourself",
+                    "Learn the art of ikebana (flower arranging)",
+                    "Discover hidden sake breweries in Fushimi",
+                    "Find the secret bamboo groves locals use",
+                    "Master the art of bowing properly",
+                    "Collect temple stamps (goshuin) as souvenirs",
+                    "Learn to identify different types of torii gates",
+                    "Practice forest bathing (shinrin-yoku) in temple grounds",
+                    "Discover the philosophy behind Japanese gardens",
+                    "Find the perfect spot for moon viewing (tsukimi)"
+                ]
+            },
+            {
+                name: "Santorini, Greece",
+                country: "Greece",
+                safetyRating: 3,
+                bestTime: "April-June, September-October",
+                climate: "warm",
+                culture: "outdoors",
+                nature: "high",
+                people: "high",
+                intellectual: "medium",
+                beauty: "high",
+                budget: ["1000-2000", "2000-3000", "3000+"],
+                flightTime: 12,
+                transportation: ["Local buses", "ATV/Scooter rental", "Boat transfers", "Walking"],
+                locals: ["Winemakers", "Fishermen", "Artists", "Restaurant owners"],
+                dontWorry: ["Steep stairs - take your time", "Crowds in summer - visit early morning", "Expensive dining - plenty of budget options", "Language barrier - English widely spoken"],
+                bringItems: ["Sunscreen (high SPF)", "Comfortable sandals", "Sun hat", "Swimwear", "Light cotton clothing", "Camera", "Portable charger", "Reusable water bottle", "Light jacket for evenings", "Waterproof phone case"],
+                activities: [
+                    "Watch sunset from Oia's famous viewpoint",
+                    "Wine tasting at local volcanic soil vineyards",
+                    "Explore the ancient ruins of Akrotiri",
+                    "Swim at Red Beach and Black Beach",
+                    "Take a boat tour to nearby islands",
+                    "Hike from Fira to Oia along the caldera",
+                    "Visit traditional villages like Megalochori",
+                    "Experience local cooking classes",
+                    "Explore the volcanic hot springs",
+                    "Discover hidden beaches by boat",
+                    "Visit local art galleries in Oia",
+                    "Learn about volcanic wine production",
+                    "Take photography workshops at golden hour",
+                    "Experience traditional Greek dancing",
+                    "Explore the Museum of Prehistoric Thera"
+                ],
+                bonusIdeas: [
+                    "Find the secret sunset spots locals know",
+                    "Learn to identify native volcanic plants",
+                    "Discover traditional Santorinian architecture secrets",
+                    "Master the art of Greek coffee preparation",
+                    "Find the island's most Instagram-worthy doors",
+                    "Learn traditional Greek phrases from taverna owners",
+                    "Discover the mythology behind the island's formation",
+                    "Find the perfect spot for stargazing",
+                    "Learn about ancient Minoan civilization",
+                    "Collect unique volcanic sand as a natural souvenir"
+                ]
+            },
+            {
+                name: "Reykjavik, Iceland",
+                country: "Iceland",
+                safetyRating: 3,
+                bestTime: "June-August (summer), September-March (Northern Lights)",
+                climate: "cool",
+                culture: "outdoors",
+                nature: "high",
+                people: "high",
+                intellectual: "high",
+                beauty: "high",
+                budget: ["2000-3000", "3000+"],
+                flightTime: 8,
+                transportation: ["Rental car", "Tour buses", "Domestic flights", "Walking"],
+                locals: ["Artists", "Musicians", "Naturalists", "Writers"],
+                dontWorry: ["Expensive food - grocery stores available", "Weather changes - dress in layers", "Driving conditions - tours available", "Language - English widely spoken"],
+                bringItems: ["Waterproof jacket", "Warm layers", "Waterproof boots", "Swimsuit for hot springs", "Camera with extra batteries", "Portable charger", "Wool socks", "Insulated water bottle", "Headlamp/flashlight", "Sunglasses"],
+                activities: [
+                    "Soak in the Blue Lagoon geothermal spa",
+                    "Hunt for Northern Lights (winter months)",
+                    "Explore the Golden Circle route",
+                    "Visit Gullfoss waterfall",
+                    "Experience Geysir geothermal area",
+                    "Hike to Seljalandsfoss waterfall",
+                    "Explore Reykjavik's vibrant art scene",
+                    "Take a glacier hiking tour",
+                    "Visit the Harpa Concert Hall",
+                    "Explore Thingvellir National Park",
+                    "Experience Icelandic horse riding",
+                    "Visit black sand beaches at Vik",
+                    "Explore ice caves (winter)",
+                    "Whale watching from Reykjavik harbor",
+                    "Visit the Perlan Museum"
+                ],
+                bonusIdeas: [
+                    "Learn to identify different types of Northern Lights",
+                    "Discover the hidden hot springs locals use",
+                    "Master Icelandic pronunciation of place names",
+                    "Learn about Norse mythology and sagas",
+                    "Find the best spot for midnight sun photography",
+                    "Discover traditional Icelandic music",
+                    "Learn about sustainable geothermal energy",
+                    "Find unique Icelandic design souvenirs",
+                    "Discover the stories behind Icelandic surnames",
+                    "Learn to identify Arctic wildlife"
+                ]
+            },
+            {
+                name: "Marrakech, Morocco",
+                country: "Morocco",
+                safetyRating: 2,
+                bestTime: "October-April",
+                climate: "warm",
+                culture: "outdoors",
+                nature: "medium",
+                people: "high",
+                intellectual: "high",
+                beauty: "high",
+                budget: ["500-1000", "1000-2000"],
+                flightTime: 10,
+                transportation: ["Taxis", "Walking", "Caleche (horse carriage)", "Rental car for Atlas Mountains"],
+                locals: ["Berber guides", "Artisan craftspeople", "Spice merchants", "Traditional musicians"],
+                dontWorry: ["Haggling - it's expected and fun", "Getting lost in medina - part of the adventure", "Spicy food - mild options available", "Dress code - casual modest clothing is fine"],
+                bringItems: ["Modest clothing", "Comfortable walking shoes", "Sunscreen", "Hat", "Scarf", "Hand sanitizer", "Stomach medication", "Cash (dirhams)", "Portable charger", "Reusable water bottle"],
+                activities: [
+                    "Explore Jemaa el-Fnaa square and night market",
+                    "Visit the stunning Bahia Palace",
+                    "Wander through the colorful souks",
+                    "Experience a traditional hammam spa",
+                    "Take a cooking class for tagine and couscous",
+                    "Visit the Majorelle Garden and Yves Saint Laurent Museum",
+                    "Explore the Saadian Tombs",
+                    "Day trip to the Atlas Mountains",
+                    "Visit traditional tanneries",
+                    "Experience traditional Gnawa music",
+                    "Explore the Koutoubia Mosque",
+                    "Take a hot air balloon ride over the countryside",
+                    "Visit local carpet cooperatives",
+                    "Experience traditional henna art",
+                    "Explore the Menara Gardens"
+                ],
+                bonusIdeas: [
+                    "Learn basic Arabic or Berber phrases",
+                    "Master the art of mint tea preparation",
+                    "Discover the symbolism in Moroccan tile patterns",
+                    "Learn traditional bargaining techniques",
+                    "Find the best rooftop views of the medina",
+                    "Discover traditional Moroccan music instruments",
+                    "Learn about traditional Moroccan architecture",
+                    "Find hidden riads with beautiful courtyards",
+                    "Discover the medicinal uses of common spices",
+                    "Learn about traditional Berber culture and customs"
+                ]
+            },
+            {
+                name: "Queenstown, New Zealand",
+                country: "New Zealand",
+                safetyRating: 3,
+                bestTime: "December-February (summer), June-August (winter sports)",
+                climate: "cool",
+                culture: "outdoors",
+                nature: "high",
+                people: "high",
+                intellectual: "medium",
+                beauty: "high",
+                budget: ["1000-2000", "2000-3000", "3000+"],
+                flightTime: 18,
+                transportation: ["Rental car", "Tour buses", "Gondola", "Boat transfers"],
+                locals: ["Adventure guides", "Winemakers", "Conservation workers", "Outdoor enthusiasts"],
+                dontWorry: ["Extreme sports safety - world-class safety standards", "Weather changes - gear rental available", "Driving on left - take your time", "Remote areas - excellent emergency services"],
+                bringItems: ["Layers for changing weather", "Waterproof jacket", "Comfortable hiking boots", "Sunscreen", "Sunglasses", "Camera", "Portable charger", "Swimwear", "Warm hat", "Insulated water bottle"],
+                activities: [
+                    "Bungee jumping from Kawarau Gorge",
+                    "Skydiving over Lake Wakatipu",
+                    "Explore Milford Sound by boat",
+                    "Hiking the Routeburn Track",
+                    "Wine tasting in Central
