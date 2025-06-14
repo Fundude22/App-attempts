@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Groovy Vacation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .travel-icons {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+
+        .questionnaire-card, .results-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+        }
+
+        .question-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            border-radius: 15px;
+            border-left: 5px solid #e17055;
+        }
+
+        .question-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2d3436;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            color: white;
+            box-shadow: 0 4px 15px rgba(116, 185, 255, 0.3);
+        }
+
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(116, 185, 255, 0.4);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(45deg, #00b894, #00a085);
+            transform: scale(1.05);
+        }
+
+        .input-field, .select-field {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            margin-top: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus, .select-field:focus {
+            outline: none;
+            border-color: #74b9ff;
+            box-shadow: 0 0 10px rgba(116, 185, 255, 0.3);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #fd79a8, #e84393);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(253, 121, 168, 0.3);
+            margin: 20px auto;
+            display: block;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(253, 121, 168, 0.4);
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .results-header h2 {
+            font-size: 2.5em;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .destination-name {
+            font-size: 1.8em;
+            color: #e17055;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .result-category {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #a8e6cf, #88d8a3);
+        }
+
+        .result-category h3 {
+            color: #2d3436;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .result-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .result-list li:before {
+            content: "✈️";
+            position: absolute;
+            left: 0;
+            top: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .retake-btn {
+            background: linear-gradient(45deg, #fdcb6e, #e17055);
+            color: white;
+        }
+
+        .repeat-btn {
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+            color: white;
+        }
+
+        .download-btn {
+            background: linear-gradient(45deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            margin: 20px;
+        }
+
+        .popup-btn {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .button-group {
+                justify-content: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>A Groovy Vacation</h1>
+            <div class="travel-icons">✈️ 🏝️ 🗺️ 🎒 🌍 🚗 🏔️ 🏖️</div>
+            <p style="font-size: 1.2em; margin-top: 10px;">Discover your perfect adventure destination!</p>
+        </div>
+
+        <div id="questionnaire" class="questionnaire-section">
+            <div class="questionnaire-card">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #2d3436;">Tell us about your travel style! 🌟</h2>
+                
+                <!-- Travel Preferences -->
+                <div class="question-group">
+                    <div class="question-title">🏨 Accommodations</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="accommodations" data-value="comfort">Comfort</button>
+                        <button class="option-btn" data-question="accommodations" data-value="outside-the-box">Outside-the-box</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">🍽️ Snarfing</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="snarfing" data-value="rich">Delicious Rich Food</button>
+                        <button class="option-btn" data-question="snarfing" data-value="healthy">Delicious Healthy Food</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">🌡️ Temp</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="temp" data-value="hot">Above 78°F</button>
+                        <button class="option-btn" data-question="temp" data-value="cool">Below 72°F</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">🤔 Intriguing</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="intriguing" data-value="people">Interesting People</button>
+                        <button class="option-btn" data-question="intriguing" data-value="nature">Interesting Nature</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">🧲 Magnetism</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="magnetism" data-value="intellectual">Intellectual Stimulation</button>
+                        <button class="option-btn" data-question="magnetism" data-value="beauty">Beauty</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">🏛️ Engage With Local Culture</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="culture" data-value="indoors">Indoors</button>
+                        <button class="option-btn" data-question="culture" data-value="outdoors">Outdoors</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">👥 Large Numbers Of Humans</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="crowds" data-value="energizing">Energizing</button>
+                        <button class="option-btn" data-question="crowds" data-value="exhausting">Exhausting</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">📱 Communication Channel</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="communication" data-value="instagram">Instagram</button>
+                        <button class="option-btn" data-question="communication" data-value="birds">Birds</button>
+                    </div>
+                </div>
+
+                <!-- Logistical Questions -->
+                <div class="question-group">
+                    <div class="question-title">✈️ Maximum Flight Time (Round Trip Hours)</div>
+                    <input type="number" class="input-field" id="flight-time" placeholder="Enter hours" min="1" max="50">
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">📅 Number of Vacation Days</div>
+                    <input type="number" class="input-field" id="vacation-days" placeholder="Enter days" min="1" max="365">
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">💰 Budget</div>
+                    <select class="select-field" id="budget">
+                        <option value="">Select your budget</option>
+                        <option value="0-1000">$0 - $1000</option>
+                        <option value="1000-2000">$1000 - $2000</option>
+                        <option value="2000-3000">$2000 - $3000</option>
+                        <option value="3000+">$3000+</option>
+                    </select>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">🏃‍♂️ Physical Challenge Level</div>
+                    <select class="select-field" id="physical-challenge">
+                        <option value="">Select challenge level</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <!-- Personality Questions -->
+                <h3 style="text-align: center; margin: 40px 0 20px 0; color: #2d3436;">Now, let's get to know you! 🎭</h3>
+
+                <div class="question-group">
+                    <div class="question-title">🐕 Other Animals</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="animals" data-value="dogs">Dogs</button>
+                        <button class="option-btn" data-question="animals" data-value="cats">Cats</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">🌙 Circadian Ritmo</div>
+                    <select class="select-field" id="circadian">
+                        <option value="">Select your rhythm</option>
+                        <option value="extreme-night-owl">Extreme Night Owl</option>
+                        <option value="night-owl">Night Owl</option>
+                        <option value="regular">Regular</option>
+                        <option value="morning-dove">Morning Dove</option>
+                        <option value="extreme-morning-dove">Extreme Morning Dove</option>
+                    </select>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">📺 Couch Streaming</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="streaming" data-value="mysteries">Mysteries</button>
+                        <button class="option-btn" data-question="streaming" data-value="rom-coms">Rom Coms</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">🎨 Art Preference</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="tattoos" data-value="cool">Tattoos are cool</button>
+                        <button class="option-btn" data-question="tattoos" data-value="siptud">Tttooaos are siptud</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">🃏 Game Night</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="games" data-value="bridge">Bridge</button>
+                        <button class="option-btn" data-question="games" data-value="poker">Poker</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">👀 When you see something amazing</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="reaction" data-value="wow">Wow, look at that!</button>
+                        <button class="option-btn" data-question="reaction" data-value="agenda">What's on the agenda?</button>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question-title">🎩 Style Statement</div>
+                    <div class="button-group">
+                        <button class="option-btn" data-question="style" data-value="top-hat">Top Hat</button>
+                        <button class="option-btn" data-question="style" data-value="hat-hair">Hat Hair</button>
+                    </div>
+                </div>
+
+                <button class="submit-btn" onclick="submitQuestionnaire()">Find My Groovy Vacation! 🌈</button>
+            </div>
+        </div>
+
+        <div id="results" class="results-section">
+            <div class="results-card">
+                <div class="results-header">
+                    <h2>Here's A Groovy Vacation</h2>
+                    <div class="destination-name" id="destination-name"></div>
+                    <div class="travel-icons">🎉 ✨ 🌟 🎊 ✨ 🌟 🎉</div>
+                </div>
+
+                <div id="results-content"></div>
+
+                <div class="action-buttons">
+                    <button class="action-btn retake-btn" onclick="retakeQuiz()">Take Quiz Again</button>
+                    <button class="action-btn repeat-btn" onclick="repeatQuiz()">Repeat</button>
+                    <button class="action-btn download-btn" onclick="downloadResults()">Download Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup for validation -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <h3>⚠️ Hold on there, traveler!</h3>
+            <p>Number of vacation days should be a minimum of number of flight time hours.</p>
+            <button class="popup-btn" onclick="closePopup()">Got it!</button>
+            <button class="popup-btn" onclick="proceedAnyway()">Proceed Anyway</button>
+        </div>
+    </div>
+
+    <script>
+        let currentAnswers = {};
+        let currentDestination = null;
+        let currentResults = null;
+
+        // Sample destinations database
+        const destinations = [
+            {
+                name: "Kyoto, Japan",
+                bestTime: "April-May, October-November",
+                tags: ["cool", "beauty", "culture", "intellectual", "indoors", "people"]
+            },
+            {
+                name: "Santorini, Greece",
+                bestTime: "April-October",
+                tags: ["hot", "beauty", "outdoors", "energizing", "instagram", "comfort"]
+            },
+            {
+                name: "Patagonia, Chile",
+                bestTime: "December-March",
+                tags: ["cool", "nature", "outdoors", "exhausting", "birds", "outside-the-box"]
+            },
+            {
+                name: "Marrakech, Morocco",
+                bestTime: "March-May, September-November",
+                tags: ["hot", "people", "culture", "intellectual", "energizing", "rich"]
+            },
+            {
+                name: "Faroe Islands",
+                bestTime: "May-September",
+                tags: ["cool", "nature", "birds", "exhausting", "outside-the-box", "healthy"]
+            },
+            {
+                name: "Bali, Indonesia",
+                bestTime: "April-October",
+                tags: ["hot", "beauty", "outdoors", "instagram", "healthy", "comfort"]
+            },
+            {
+                name: "Iceland",
+                bestTime: "June-August",
+                tags: ["cool", "nature", "outdoors", "birds", "beauty", "outside-the-box"]
+            },
+            {
+                name: "Havana, Cuba",
+                bestTime: "November-April",
+                tags: ["hot", "people", "culture", "rich", "energizing", "intellectual"]
+            },
+            {
+                name: "New Zealand",
+                bestTime: "December-February",
+                tags: ["cool", "nature", "outdoors", "beauty", "birds", "outside-the-box"]
+            },
+            {
+                name: "Tokyo, Japan",
+                bestTime: "March-May, September-November",
+                tags: ["cool", "people", "culture", "intellectual", "energizing", "instagram"]
+            }
+        ];
+
+        // Handle option button clicks
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('option-btn')) {
+                const question = e.target.dataset.question;
+                const value = e.target.dataset.value;
+                
+                // Remove selected class from siblings
+                const siblings = e.target.parentNode.querySelectorAll('.option-btn');
+                siblings.forEach(btn => btn.classList.remove('selected'));
+                
+                // Add selected class to clicked button
+                e.target.classList.add('selected');
+                
+                // Store answer
+                currentAnswers[question] = value;
+            }
+        });
+
+        function submitQuestionnaire() {
+            // Validate required fields
+            const flightTime = document.getElementById('flight-time').value;
+            const vacationDays = document.getElementById('vacation-days').value;
+            const budget = document.getElementById('budget').value;
+            const physicalChallenge = document.getElementById('physical-challenge').value;
+            const circadian = document.getElementById('circadian').value;
+
+            if (!flightTime || !vacationDays || !budget || !physicalChallenge || !circadian) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            // Store logistical answers
+            currentAnswers.flightTime = parseInt(flightTime);
+            currentAnswers.vacationDays = parseInt(vacationDays);
+            currentAnswers.budget = budget;
+            currentAnswers.physicalChallenge = physicalChallenge;
+            currentAnswers.circadian = circadian;
+
+            // Validate vacation days vs flight time
+            if (parseInt(vacationDays) < parseInt(flightTime)) {
+                document.getElementById('popup').style.display = 'flex';
+                return;
+            }
+
+            generateRecommendation();
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        function proceedAnyway() {
+            document.getElementById('popup').style.display = 'none';
+            generateRecommendation();
+        }
+
+        function generateRecommendation() {
+            // Simple matching algorithm
+            let bestMatch = destinations[0];
+            let bestScore = 0;
+
+            destinations.forEach(destination => {
+                let score = 0;
+                
+                // Score based on preferences
+                Object.keys(currentAnswers).forEach(key => {
+                    if (destination.tags.includes(currentAnswers[key])) {
+                        score += 1;
+                    }
+                });
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = destination;
+                }
+            });
+
+            // If no good match, pick randomly
+            if (bestScore === 0) {
+                bestMatch = destinations[Math.floor(Math.random() * destinations.length)];
+            }
+
+            currentDestination = bestMatch;
+            displayResults(bestMatch);
+        }
+
+        function displayResults(destination) {
+            document.getElementById('destination-name').textContent = destination.name;
+            
+            const resultsContent = document.getElementById('results-content');
+            resultsContent.innerHTML = `
+                <div class="result-category">
+                    <h3>🌅 Best Time to Visit</h3>
+                    <p>${destination.bestTime}</p>
+                </div>
+
+                <div class="result-category">
+                    <h3>🎯 10 Things to Do</h3>
+                    <ul class="result-list">
+                        ${generateActivities(destination).map(activity => `<li>${activity}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="result-category">
+                    <h3>🚗 Transportation Ideas</h3>
+                    <ul class="result-list">
+                        ${generateTransportation(destination).map(transport => `<li>${transport}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="result-category">
+                    <h3>🤝 Who to Connect With</h3>
+                    <ul class="result-list">
+                        ${generateConnections(destination).map(connection => `<li>${connection}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="result-category">
+                    <h3>😌 3 Things You Shouldn't Worry About</h3>
+                    <ul class="result-list">
+                        ${generateWorries(destination).map(worry => `<li>${worry}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="result-category">
+                    <h3>🎒 10 Items to Pack (You May Not Have Thought Of)</h3>
+                    <ul class="result-list">
+                        ${generatePackingItems(destination).map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="result-category">
+                    <h3>🌟 10 Outside-the-Box Suggestions</h3>
+                    <ul class="result-list">
+                        ${generateOutsideTheBox(destination).map(suggestion => `<li>${suggestion}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="result-category">
+                    <h3>🔍 10 Options Tourists Never Do</h3>
+                    <ul class="result-list">
+                        ${generateHiddenGems(destination).map(gem => `<li>${gem}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="result-category" style="background: linear-gradient(135deg, #ffeaa7, #fab1a0);">
+                    <h3>✨ 3 Groovy Bonus Elements</h3>
+                    <ul class="result-list">
+                        ${generateBonusElements(destination).map(element => `<li>${element}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            currentResults = resultsContent.innerHTML;
+            
+            // Show results, hide questionnaire
+            document.getElementById('questionnaire').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function generateActivities(destination) {
+            const activities = {
+                "Kyoto, Japan": [
+                    "Meditate at Kinkaku-ji (Golden Pavilion) at sunrise",
+                    "Take a traditional tea ceremony class",
+                    "Walk through the Bamboo Grove of Arashiyama",
+                    "Explore the Fushimi Inari shrine's thousand torii gates",
+                    "Visit a traditional ryokan with onsen hot springs",
+                    "Learn calligraphy from a local master",
+                    "Discover hidden temples in the Higashiyama district",
+                    "Experience a kaiseki dinner at a Michelin-starred restaurant",
+                    "Attend a traditional kabuki performance",
+                    "Cycle through the philosopher's path during cherry blossom season"
+                ],
+                "Santorini, Greece": [
+                    "Watch the sunset from Oia's blue-domed churches",
+                    "Explore the ancient ruins of Akrotiri",
+                    "Take a wine tour through volcanic vineyards",
+                    "Swim in the Red Beach's unique crimson waters",
+                    "Hike from Fira to Oia along the caldera rim",
+                    "Visit a traditional cave house winery",
+                    "Take a catamaran cruise around the island",
+                    "Explore the black sand beaches of Kamari",
+                    "Discover the medieval village of Pyrgos",
+                    "Experience a traditional Greek cooking class"
+                ]
+            };
+            
+            return activities[destination.name] || [
+                "Explore the local markets and street food scene",
+                "Take a guided walking tour of historic neighborhoods",
+                "Visit the most famous landmark at sunrise",
+                "Try a traditional cooking class with locals",
+                "Hike to a scenic viewpoint off the beaten path",
+                "Experience local music and dance performances",
+                "Take a day trip to nearby natural wonders",
+                "Browse unique artisan workshops and galleries",
+                "Join a photography tour of hidden gems",
+                "Attend a local festival or cultural event"
+            ];
+        }
+
+        function generateTransportation(destination) {
+            return [
+                "Rent a local bicycle for eco-friendly city exploration",
+                "Use the public transportation system like a local",
+                "Take scenic train routes through the countryside",
+                "Rent a scooter for island or coastal adventures",
+                "Join a group tour with knowledgeable local guides"
+            ];
+        }
+
+        function generateConnections(destination) {
+            return [
+                "Local tour guides who share insider knowledge",
+                "Artisans and craftspeople in traditional workshops",
+                "Fellow travelers at community-style accommodations",
+                "Local families through homestay programs",
+                "Cultural center staff who organize community events"
+            ];
+        }
+
+        function generateWorries(destination) {
+            return [
+                "Language barriers - locals are usually very helpful and patient",
+                "Getting lost - it often leads to the best discoveries",
+                "Trying unfamiliar foods - most places cater to different dietary needs"
+            ];
+        }
+
+        function generatePackingItems(destination) {
+            return [
+                "Portable phone charger/power bank",
+                "Universal travel adapter",
+                "Reusable water bottle with filter",
+                "Comfortable walking shoes (broken in)",
+                "Quick-dry towel",
+                "Local currency in small bills",
+                "Copies of important documents",
+                "Basic first aid supplies",
+                "Comfortable daypack",
+                "Weather-appropriate layers"
+            ];
+        }
